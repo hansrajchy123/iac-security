@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Intentionally vulnerable CloudFormation template for Trivy demo
+
+Resources:
+
+  InsecureS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: insecure-public-bucket-demo-123
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  InsecureBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref InsecureS3Bucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !Sub "${InsecureS3Bucket.Arn}"
+              - !Sub "${InsecureS3Bucket.Arn}/*"
+
+  OpenSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow all inbound traffic
+      VpcId: vpc-12345678
+      SecurityGroupIngress:
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
+
+  InsecureEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0abcdef1234567890
+      SecurityGroupIds:
+        - !Ref OpenSecurityGroup
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: optional   # IMDSv1 allowed (insecure)
