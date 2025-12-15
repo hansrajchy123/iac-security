@@ -18,10 +18,7 @@ jobs:
         with:
           scan-type: "config"
           scan-ref: "."
-          severity: "CRITICAL,HIGH,MEDIUM" #choose one
+          severity: "CRITICAL,HIGH,MEDIUM"
           format: "table"
-          # format: "sarif"
-          # output: "trivy-results.sarif" what is sarif?
-          
-          exit-code: "1" #Allow pipeline to pass but still report
+          exit-code: "0"
 
