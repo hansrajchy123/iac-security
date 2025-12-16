@@ -3,6 +3,18 @@ name: Trivy IaC Scan (CloudFormation)
 on:
   workflow_dispatch:
   push:
+    inputs:
+      server_ip:
+        description: 'Severity'
+        required: true
+        default: "CRITICAL,HIGH,LOW"
+        type: choice
+        options:
+        - CRITICAL
+        - HIGH
+        - MEDIUM
+
+
     branches: [ "main" ]
 
 jobs:
